@@ -1,15 +1,40 @@
 <template>
   <div id="app" class="container">
     <global-header :user="userInfo"/>
+    <validate-form action="" @form-submit="onFormSubmit">
+      <div class="mb-3">
+        <label class="form-label">邮箱地址</label>
+        <validate-input
+          :rules="emailRules"
+          v-model="emailValue"
+          placeholder="请输入邮箱"
+          type="text"
+          />
+        {{emailValue}}
+      </div>
+      <div class="mb-3">
+        <label for="form-label">密码</label>
+        <validate-input
+          :rules="passRules"
+          placeholder="请输入密码"
+          type="password"
+          />
+      </div>
+      <template #submit>
+        <span class="btn btn-danger">Submit</span>
+      </template>
+    </validate-form>
     <column-list :list="list"/>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import ColumnList, { ColumnProps } from './components/ColumnList.vue'
 import GlobalHeader, { UserProp } from './components/GlobalHeader.vue'
+import ValidateInput, { RuleProp } from './components/ValidateInput.vue'
+import ValidateForm from './components/ValidateForm.vue'
 const testData: ColumnProps[] = [
   {
     id: 1,
@@ -41,16 +66,34 @@ const userInfo: UserProp = {
   name: 'horizon'
 }
 
+const emailRules: RuleProp[] = [
+  { type: 'required', message: '请输入内容' },
+  { type: 'email', message: '请输入正确的邮箱格式' }
+]
+const passRules: RuleProp[] = [
+  { type: 'required', message: '请输入内容' }
+]
+
 export default defineComponent({
   name: 'App',
   components: {
     ColumnList,
-    GlobalHeader
+    GlobalHeader,
+    ValidateInput,
+    ValidateForm
   },
   setup () {
+    const emailValue = ref('111')
+    const onFormSubmit = (result:boolean) => {
+      console.log(result)
+    }
     return {
       list: testData,
-      userInfo
+      userInfo,
+      emailRules,
+      passRules,
+      emailValue,
+      onFormSubmit
     }
   }
 })
